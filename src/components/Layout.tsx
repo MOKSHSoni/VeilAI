@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Icon, type IconName } from './Icon';
 import { DemoHud } from './DemoHud';
+import { useDemo } from '../lib/demo';
 
 const NAV: { to: string; label: string; icon: IconName; hint: string }[] = [
   { to: '/', label: 'Scan', icon: 'scan', hint: 'Prompt firewall' },
@@ -109,12 +110,12 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
-      <DemoHud />
     </div>
   );
 }
 
 export function AttestationStrip() {
+  const demoActive = useDemo().active;
   const items: { icon: IconName; k: string; v: string }[] = [
     { icon: 'cpu', k: 'Analysis', v: 'on device' },
     { icon: 'layers', k: 'Model', v: 'Ollama + Qwen3 4B (simulated)' },
@@ -130,14 +131,15 @@ export function AttestationStrip() {
         <Icon name="shield" size={14} className="text-accent" /> Attestation
       </span>
       <span className="h-3.5 w-px shrink-0 bg-line-2" />
-      {items.map((i) => (
+      {items.filter((i) => !demoActive || i.k !== 'Model').map((i) => (
         <span key={i.k} className="flex shrink-0 items-center gap-1.5 text-ink-2">
           <Icon name={i.icon} size={13} className="text-ink-3" />
           <span className="text-ink-3">{i.k}:</span>
           <span className="font-mono text-[11.5px] text-ink">{i.v}</span>
         </span>
       ))}
-      <span className="ml-auto hidden truncate font-mono text-[10.5px] text-ink-3 xl:block">original content never transmitted</span>
+      <DemoHud />
+      {!demoActive && <span className="ml-auto hidden truncate font-mono text-[10.5px] text-ink-3 xl:block">original content never transmitted</span>}
     </div>
   );
 }

@@ -64,7 +64,7 @@ export function Scan() {
   const onFinished = useCallback(() => demo.next(demoIndex), [demoIndex]);
 
   return (
-    <div className="flex h-full min-h-[620px] flex-col gap-3 p-4">
+    <div className="flex h-full min-h-[600px] flex-col gap-3 p-4">
       <header className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-baseline gap-3">
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Scan</h1>

@@ -23,22 +23,17 @@ export function DemoHud() {
 
   if (!d.active || !step) return null;
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-3 z-50 flex justify-center">
+    <div className="ml-auto flex shrink-0">
       <div
         role="region"
         aria-label="Demo mode controls"
-        className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/10 bg-[#111217]/95 py-1.5 pl-3 pr-1.5 text-[12px] text-white shadow-2xl backdrop-blur"
+        className="rise flex h-7 items-center gap-3 rounded-full border border-white/10 bg-[#111217] pl-3 pr-1 text-[12px] text-white"
       >
         <span className="flex items-center gap-1.5 font-mono text-[10.5px] font-semibold tracking-wider text-[#8fa0ff]">
           <span className={`h-1.5 w-1.5 rounded-full bg-[#8fa0ff] ${d.paused ? '' : 'animate-pulse'}`} />
           DEMO {d.index + 1}/{DEMO_STEPS.length}
         </span>
-        <span className="max-w-[260px] truncate">{step.label}</span>
-        <div className="flex gap-0.5">
-          {DEMO_STEPS.map((_, i) => (
-            <span key={i} className={`h-1 w-3 rounded-full ${i < d.index ? 'bg-white/60' : i === d.index ? 'bg-[#8fa0ff]' : 'bg-white/15'}`} />
-          ))}
-        </div>
+        <span className="max-w-[240px] truncate">{step.label}</span>
         <div className="flex items-center gap-0.5">
           <HudBtn label="Previous step" onClick={demo.prev}>
             <Icon name="arrow" size={13} className="rotate-180" />
@@ -60,7 +55,7 @@ export function DemoHud() {
 
 function HudBtn({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button type="button" onClick={onClick} aria-label={label} title={label} className="flex h-7 w-7 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white">
+    <button type="button" onClick={onClick} aria-label={label} title={label} className="flex h-6 w-6 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white">
       {children}
     </button>
   );

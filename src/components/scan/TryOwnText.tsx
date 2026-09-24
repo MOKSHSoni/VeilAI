@@ -84,7 +84,13 @@ function MatchTable({ matches }: { matches: RuleMatch[] }) {
   if (!matches.length) return <div className="rounded-lg border border-dashed border-line-2 px-3 py-4 text-center text-[12px] text-ink-3">No known patterns found.</div>;
   return (
     <div className="overflow-hidden rounded-lg border border-line">
-      <table className="w-full text-[11.5px]">
+      <table className="w-full table-fixed text-[11.5px]">
+        <colgroup>
+          <col className="w-[27%]" />
+          <col className="w-[27%]" />
+          <col className="w-[28%]" />
+          <col className="w-[18%]" />
+        </colgroup>
         <thead className="bg-panel-2 text-left">
           <tr>
             {['Rule', 'Value', 'Category', 'Severity'].map((h) => (
@@ -97,11 +103,13 @@ function MatchTable({ matches }: { matches: RuleMatch[] }) {
         <tbody>
           {matches.map((m, i) => (
             <tr key={i} className="border-t border-line/70">
-              <td className="whitespace-nowrap px-2.5 py-1.5">{m.label}</td>
-              <td className="max-w-[160px] truncate px-2.5 py-1.5 font-mono" title={m.value}>
+              <td className="truncate px-2.5 py-1.5" title={m.label}>
+                {m.label}
+              </td>
+              <td className="truncate px-2.5 py-1.5 font-mono" title={m.value}>
                 {m.value}
               </td>
-              <td className="px-2.5 py-1.5">
+              <td className="truncate px-2.5 py-1.5" title={m.primaryCategory}>
                 <CategoryChip c={m.primaryCategory} primary />
               </td>
               <td className="px-2.5 py-1.5">
