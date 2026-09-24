@@ -29,6 +29,10 @@
   --critical: #d42a1f;
   --review: #6d4ce6;
 
+  /* Two-series categorical pair (validated: dataviz validate_palette, light) */
+  --series-a: #c0399a;
+  --series-b: #2b45ff;
+
   --shadow: 0 1px 0 rgb(21 22 27 / 0.03), 0 8px 24px -12px rgb(21 22 27 / 0.12);
   color-scheme: light;
 }
@@ -55,6 +59,9 @@
   --critical: #ff5a4e;
   --review: #a38bff;
 
+  --series-a: #d65aab;
+  --series-b: #6e82ff;
+
   --shadow: 0 1px 0 rgb(0 0 0 / 0.4), 0 12px 30px -14px rgb(0 0 0 / 0.7);
   color-scheme: dark;
 }
@@ -78,6 +85,8 @@
   --color-high: var(--high);
   --color-critical: var(--critical);
   --color-review: var(--review);
+  --color-series-a: var(--series-a);
+  --color-series-b: var(--series-b);
 
   --font-sans: system-ui, -apple-system, 'Segoe UI Variable Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Mono', 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
@@ -200,8 +209,8 @@ body {
 }
 
 @keyframes scan-line {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(100%); }
+  from { top: -25%; }
+  to { top: 100%; }
 }
 
 /* Simulated tag */

@@ -45,7 +45,7 @@ export const store = {
     set({ allowlist: [...state.allowlist, term], allowlistVersion: state.allowlistVersion + 1 });
   },
   raiseHoneytokenAlert(tokenId: string, source: string) {
-    const at = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const at = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     set({ honeytokenAlert: { tokenId, source, at } });
   },
   setFeedback(id: string, stage: FeedbackStage) {
