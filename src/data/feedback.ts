@@ -39,7 +39,7 @@ export const FEEDBACK_QUEUE: FeedbackItem[] = [
     category: 'CREDENTIALS',
     severity: 'CRITICAL',
     layer: 'L1 Deterministic · AWS key pattern',
-    snippet: '"AWS_ACCESS_KEY_ID = \\"AKIA████████████\\""',
+    snippet: 'AWS_ACCESS_KEY_ID = "AKIA████████████"',
     reason: 'User reported: "It is only a test key."',
     reportedBy: 'u_7f3a91c2',
     department: 'Engineering',

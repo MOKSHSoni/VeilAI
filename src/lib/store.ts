@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 
-export type FeedbackStage = 'OPEN' | 'CONFIRMED' | 'FALSE_NEGATIVE' | 'PROPOSED' | 'GATE_PASSED' | 'AWAITING_APPROVAL' | 'APPLIED';
+export type FeedbackStage = 'OPEN' | 'CONFIRMED' | 'FALSE_NEGATIVE' | 'FP_LOGGED' | 'PROPOSED' | 'GATE_PASSED' | 'AWAITING_APPROVAL' | 'APPLIED';
 
 export interface HoneytokenAlert {
   tokenId: string;

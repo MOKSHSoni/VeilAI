@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SCENARIOS, getScenario } from '../data/scenarios';
 import type { Decision, Scenario } from '../data/types';
 import { runScenario, type PipelineRun } from '../lib/pipeline';
@@ -33,7 +34,9 @@ const OUTPUT_STEP = 11;
 
 export function Scan() {
   const [tab, setTab] = useState<'scenarios' | 'own'>('scenarios');
-  const [selectedId, setSelectedId] = useState(6);
+  const [params] = useSearchParams();
+  const linked = Number(params.get('scenario'));
+  const [selectedId, setSelectedId] = useState(SCENARIOS.some((s) => s.id === linked) ? linked : 6);
   const [nonce, setNonce] = useState(0);
   const allowlist = useStore((s) => s.allowlist);
   const allowlistVersion = useStore((s) => s.allowlistVersion);
