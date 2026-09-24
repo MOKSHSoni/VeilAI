@@ -13,7 +13,8 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Shared UI modules export small helpers alongside components; HMR granularity is not a concern here.
+      'react-refresh/only-export-components': 'off',
     },
   },
 );

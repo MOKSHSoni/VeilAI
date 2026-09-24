@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Icon, type IconName } from './Icon';
+import { DemoHud } from './DemoHud';
 
 const NAV: { to: string; label: string; icon: IconName; hint: string }[] = [
   { to: '/', label: 'Scan', icon: 'scan', hint: 'Prompt firewall' },
@@ -108,6 +109,7 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
+      <DemoHud />
     </div>
   );
 }
