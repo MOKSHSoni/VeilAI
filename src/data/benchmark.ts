@@ -70,6 +70,8 @@ export interface AblationRow {
   recall: string | null;
   fnr: string | null;
   fpr: string | null;
+  /** Share of all documents sent to REVIEW (full fusion only). */
+  review?: string;
 }
 
 // Measured on the same 192 documents with the same scoring code as the LLM-only baseline
@@ -80,8 +82,8 @@ export const ABLATION: AblationRow[] = [
   { step: 2, change: '+ L1 deterministic rules + L2 entity NER (Presidio + GLiNER)', recall: '57.8%', fnr: '42.2%', fpr: '17.8%' },
   { step: 3, change: '+ Chunked, per-category L5 prompts (financial, business, IP)', recall: '95.2%', fnr: '4.8%', fpr: '22.2%' },
   { step: 4, change: '+ L4 context signals (cue rules only; classifier not yet trained)', recall: '95.2%', fnr: '4.8%', fpr: '24.4%' },
-  { step: 5, change: '+ L3 Org DNA + L0 honeytokens (needs an org corpus + planted test set)', recall: null, fnr: null, fpr: null },
-  { step: 6, change: 'Full fusion (flag on any, clear on all)', recall: null, fnr: null, fpr: null },
+  { step: 5, change: '+ L3 Org DNA + L0 honeytokens (none present in this set, so +0; tested separately below)', recall: '95.2%', fnr: '4.8%', fpr: '24.4%' },
+  { step: 6, change: 'Full fusion: strong signals flag; a single weak signal goes to REVIEW', recall: '95.2%', fnr: '4.8%', fpr: '11.1%', review: '6.2%' },
 ];
 
 /** Headline for the ablation panel: the last measured step vs the baseline. */
@@ -92,5 +94,37 @@ export const ABLATION_HEADLINE = (() => {
 
 export const ABLATION_NOTE =
   'Recall and FNR score sensitive-vs-safe detection; per-category labels from step 3 are not yet reliable (category precision 38–52%). ' +
-  'False positives rise as layers are added: a flag means minimise and mask, not block. Minimisation, masking and verification are measured separately ' +
-  '(utility retention %, residual leaks after masking), not by detection recall.';
+  'Step 6: recall counts documents flagged or sent to REVIEW (never released unreviewed); FPR counts hard flags on safe documents, and a further 13.3% of safe documents go to REVIEW. ' +
+  'The step 6 rule was chosen after seeing where false positives came from, so it needs validation on fresh data. ' +
+  'Minimisation, masking and verification are measured separately (utility retention %, residual leaks after masking), not by detection recall.';
+
+export interface LayerTest {
+  layer: string;
+  setup: string;
+  results: { label: string; value: string; good: boolean }[];
+}
+
+/** Layers the 192-document set cannot exercise, tested separately (design doc §15.2). */
+export const LAYER_TESTS: LayerTest[] = [
+  {
+    layer: 'L0 Honeytokens',
+    setup: '20 test tokens planted into benchmark documents in 6 forms; registry checked against all 196 unmodified documents',
+    results: [
+      { label: 'Planted tokens caught', value: '117 / 120 (97.5%)', good: true },
+      { label: 'False alarms', value: '0 / 196 documents', good: true },
+      { label: 'Spaced-out evasion', value: '17 / 20 (misses when the next word is one letter)', good: false },
+      { label: 'Partial copy of a token', value: '0 / 20 (exact hash, by design)', good: false },
+    ],
+  },
+  {
+    layer: 'L3 Org DNA (MinHash)',
+    setup: '10 fictional confidential documents registered; 5-word shingles, containment ≥ 0.4',
+    results: [
+      { label: 'Exact excerpts', value: '10 / 10', good: true },
+      { label: 'Light or medium edits', value: '10 / 10', good: true },
+      { label: 'Heavy edits (1 word in 6 removed, numbers changed)', value: '3 / 10', good: false },
+      { label: 'Paraphrases (needs embeddings)', value: '0 / 10', good: false },
+      { label: 'False alarms', value: '0 / 196 documents', good: true },
+    ],
+  },
+];

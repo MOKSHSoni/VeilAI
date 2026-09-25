@@ -53,7 +53,8 @@ Other simulated data: `src/data/dashboard.ts`, `feedback.ts`, `documentScan.ts` 
 **`src/data/benchmark.ts`** holds the only real measured data in the app (192 documents, Intel Core Ultra 5 125H, 16 GB RAM, CPU only).
 
 - `OVERALL`, `BY_CATEGORY` and `LONG_DOCUMENT` hold the measured Qwen3 1.7B vs 4B results.
-- `ABLATION`: steps 0–4 are measured (Qwen3 4B), with recall, FNR and FPR. Steps 5–6 are `null` and render as **"To be measured"**. When a step is measured, replace `null` with a string such as `'61.2%'`. Do not add ensemble numbers that have not been measured.
+- `ABLATION`: all steps 0–6 are measured (Qwen3 4B), with recall, FNR, FPR and, for step 6, the REVIEW rate. `null` would render as **"To be measured"**. Do not add numbers that have not been measured.
+- `LAYER_TESTS`: separate honeytoken (L0) and Org DNA (L3) tests, for layers the 192-document set cannot exercise.
 
 ### Measured ablation (Qwen3 4B, same 192 documents, same scoring as the LLM-only benchmark)
 
@@ -64,11 +65,14 @@ Other simulated data: `src/data/dashboard.ts`, `feedback.ts`, `documentScan.ts` 
 | 2 | + L1 rules + L2 NER (Presidio + GLiNER) | 57.8% | 42.2% | 17.8% |
 | 3 | + chunked, per-category L5 prompts (financial, business, IP) | **95.2%** | **4.8%** | 22.2% |
 | 4 | + L4 cue rules (classifier not trained) | 95.2% | 4.8% | 24.4% |
-| 5–6 | Org DNA + honeytokens; full fusion | to be measured | | |
+| 5 | + L3 Org DNA + L0 honeytokens (none in this set: +0) | 95.2% | 4.8% | 24.4% |
+| 6 | Full fusion: strong signals flag, one weak signal → REVIEW | **95.2%** | **4.8%** | **11.1%** (REVIEW 6.2% of all docs) |
 
 - Per-category Qwen prompts on their own: **4B 83.7% recall / 6.7% FPR (4.5 s per call)**; **1.7B 98.6% recall / 26.7% FPR (2.1 s per call)**. 4B is the precise option, 1.7B the fast and aggressive one.
 - Recall scores sensitive vs safe. Per-category labels from step 3 are not yet reliable (category precision 38–52%).
-- Steps 5–6 need an organisation corpus and a planted-honeytoken test set; the L4 classifier needs separate training data.
+- Step 6 halves hard false alarms (24.4% → 11.1%) at the same recall; the step 6 rule was chosen after seeing where false positives came from, so validate it on fresh data.
+- Separate layer tests: **honeytokens** 117/120 planted tokens caught (97.5%), 0 false alarms on 196 documents (misses: 3 spaced-out tokens followed by a one-letter word; partial copies by design). **Org DNA** exact excerpts 10/10, light/medium edits 10/10, heavy edits 3/10, paraphrases 0/10, 0 false alarms.
+- Not measured: the L4 embedding classifier (needs separate training data).
 - Scripts, raw outputs and how to rerun: `../model testing/privacy-benchmark/ablation/README.md`.
 
 ## 5. Architecture overview
@@ -188,6 +192,7 @@ The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), 
 - Rules are a representative subset (AWS/Stripe/GitHub/Google/Slack-style keys, passwords, emails, Indian mobiles, Aadhaar, PAN, cards, internal hosts), not a full gitleaks ruleset.
 - Honeytoken hashing uses FNV-1a for the demo. The design calls for HMAC with an organisation secret.
 - Dashboard numbers, the feedback regression gate and the document pages are illustrative.
-- Ablation steps 0–4 are measured on one synthetic 192-document set from a single generator; steps 5–6 are not measured. False positives rise with more layers (6.7% → 24.4%). A flag means minimise and mask, not block.
+- The ablation is measured on one synthetic 192-document set from a single generator. With full fusion, 11.1% of safe documents are still hard-flagged and 13.3% go to REVIEW. A flag means minimise and mask, not block.
+- The normaliser can merge a following one-letter word into a spaced-out token (found by the honeytoken test).
 - No browser extension, persistence or authentication. Everything resets on reload.
 - No AI-based privacy system can guarantee 100% detection; VeilAI's design relies on multiple layers, verification before release and REVIEW for uncertainty.

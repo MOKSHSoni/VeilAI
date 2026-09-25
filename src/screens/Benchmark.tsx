@@ -3,6 +3,7 @@ import {
   ABLATION,
   ABLATION_HEADLINE,
   ABLATION_NOTE,
+  LAYER_TESTS,
   BENCHMARK_SETUP,
   BY_CATEGORY,
   LONG_DOCUMENT,
@@ -197,7 +198,7 @@ export function Benchmark() {
         <table className="w-full text-[12.5px]">
           <thead>
             <tr className="border-b border-line bg-panel-2 text-left">
-              {['Step', 'Change', 'Recall', 'FNR', 'FPR'].map((h, i) => (
+              {['Step', 'Change', 'Recall', 'FNR', 'FPR', 'Review'].map((h, i) => (
                 <th key={h} className={`px-4 py-2 font-normal ${i >= 2 ? 'text-right' : ''}`}>
                   <Kicker>{h}</Kicker>
                 </th>
@@ -212,12 +213,37 @@ export function Benchmark() {
                 <Cell v={r.recall} />
                 <Cell v={r.fnr} />
                 <Cell v={r.fpr} />
+                <td className="px-4 py-1.5 text-right">
+                  {r.review ? <span className="num font-mono font-semibold text-review">{r.review}</span> : <span className="font-mono text-ink-3">–</span>}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         <p className="border-t border-line px-4 py-2.5 text-[11.5px] text-ink-3">{ABLATION_NOTE}</p>
       </Panel>
+
+      <div className="grid grid-cols-2 gap-3">
+        {LAYER_TESTS.map((t) => (
+          <Panel key={t.layer}>
+            <PanelHeader kicker="Layer test · outside the 192-document set" title={t.layer} />
+            <div className="px-4 pb-3 pt-2">
+              <p className="mb-2 text-[11.5px] text-ink-3">{t.setup}</p>
+              <ul className="divide-y divide-line/70">
+                {t.results.map((r) => (
+                  <li key={r.label} className="flex items-center justify-between gap-3 py-1.5 text-[12.5px]">
+                    <span className="flex items-center gap-2">
+                      <Icon name={r.good ? 'check' : 'x'} size={13} strokeWidth={2.4} className={r.good ? 'text-safe' : 'text-medium'} />
+                      {r.label}
+                    </span>
+                    <span className="num text-right font-mono text-[12px] font-semibold">{r.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Panel>
+        ))}
+      </div>
     </div>
   );
 }
