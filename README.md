@@ -53,7 +53,7 @@ Other simulated data: `src/data/dashboard.ts`, `feedback.ts`, `documentScan.ts` 
 **`src/data/benchmark.ts`** holds the only real measured data in the app (192 documents, Intel Core Ultra 5 125H, 16 GB RAM, CPU only).
 
 - `OVERALL`, `BY_CATEGORY` and `LONG_DOCUMENT` hold the measured Qwen3 1.7B vs 4B results.
-- `ABLATION`: rows 1–6 are `null` and render as **"To be measured"**. When a step is measured, replace `null` with a string such as `'61.2%'`. Do not add ensemble numbers that have not been measured.
+- `ABLATION`: steps 0–4 are measured (Qwen3 4B; scripts and raw results in `../model testing/privacy-benchmark/ablation/`). Steps 5–6 are `null` and render as **"To be measured"**. When a step is measured, replace `null` with a string such as `'61.2%'`. Do not add ensemble numbers that have not been measured.
 
 ## 5. Architecture overview
 
