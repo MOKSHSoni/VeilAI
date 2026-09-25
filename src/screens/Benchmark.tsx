@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   ABLATION,
+  ABLATION_HEADLINE,
   ABLATION_NOTE,
   BENCHMARK_SETUP,
   BY_CATEGORY,
@@ -192,11 +193,11 @@ export function Benchmark() {
       </div>
 
       <Panel>
-        <PanelHeader kicker="Ablation · detection layers only" title="LLM alone: 45.6% recall. VeilAI ensemble: to be measured." />
+        <PanelHeader kicker="Ablation · detection layers only" title={ABLATION_HEADLINE} />
         <table className="w-full text-[12.5px]">
           <thead>
             <tr className="border-b border-line bg-panel-2 text-left">
-              {['Step', 'Change', 'Recall', 'FNR'].map((h, i) => (
+              {['Step', 'Change', 'Recall', 'FNR', 'FPR'].map((h, i) => (
                 <th key={h} className={`px-4 py-2 font-normal ${i >= 2 ? 'text-right' : ''}`}>
                   <Kicker>{h}</Kicker>
                 </th>
@@ -210,6 +211,7 @@ export function Benchmark() {
                 <td className="px-4 py-1.5">{r.change}</td>
                 <Cell v={r.recall} />
                 <Cell v={r.fnr} />
+                <Cell v={r.fpr} />
               </tr>
             ))}
           </tbody>

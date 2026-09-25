@@ -69,17 +69,28 @@ export interface AblationRow {
   change: string;
   recall: string | null;
   fnr: string | null;
+  fpr: string | null;
 }
 
+// Measured on the same 192 documents with the same scoring code as the LLM-only baseline
+// (model testing/privacy-benchmark/ablation/, ablation_results.json). Cumulative, flag on any.
 export const ABLATION: AblationRow[] = [
-  { step: 0, change: 'Qwen3 4B baseline (LLM only)', recall: '45.6%', fnr: '54.4%' },
-  { step: 1, change: '+ Label hierarchy / multi-label scoring', recall: null, fnr: null },
-  { step: 2, change: '+ L1 deterministic rules + L2 entity NER', recall: null, fnr: null },
-  { step: 3, change: '+ Chunked, per-category L5 prompts', recall: null, fnr: null },
-  { step: 4, change: '+ L4 context signals (cue rules + classifier)', recall: null, fnr: null },
-  { step: 5, change: '+ L3 Org DNA + L0 honeytokens', recall: null, fnr: null },
-  { step: 6, change: 'Full fusion (flag on any, clear on all)', recall: null, fnr: null },
+  { step: 0, change: 'Qwen3 4B baseline (LLM only)', recall: '45.6%', fnr: '54.4%', fpr: '6.7%' },
+  { step: 1, change: '+ Label hierarchy / multi-label scoring', recall: '45.6%', fnr: '54.4%', fpr: '6.7%' },
+  { step: 2, change: '+ L1 deterministic rules + L2 entity NER (Presidio + GLiNER)', recall: '57.8%', fnr: '42.2%', fpr: '17.8%' },
+  { step: 3, change: '+ Chunked, per-category L5 prompts (financial, business, IP)', recall: '95.2%', fnr: '4.8%', fpr: '22.2%' },
+  { step: 4, change: '+ L4 context signals (cue rules only; classifier not yet trained)', recall: '95.2%', fnr: '4.8%', fpr: '24.4%' },
+  { step: 5, change: '+ L3 Org DNA + L0 honeytokens (needs an org corpus + planted test set)', recall: null, fnr: null, fpr: null },
+  { step: 6, change: 'Full fusion (flag on any, clear on all)', recall: null, fnr: null, fpr: null },
 ];
 
+/** Headline for the ablation panel: the last measured step vs the baseline. */
+export const ABLATION_HEADLINE = (() => {
+  const last = [...ABLATION].reverse().find((r) => r.recall);
+  return last && last.step > 0 ? `LLM alone: ${ABLATION[0].recall} recall. VeilAI layers (steps 1–${last.step}): ${last.recall}.` : `LLM alone: ${ABLATION[0].recall} recall. VeilAI ensemble: to be measured.`;
+})();
+
 export const ABLATION_NOTE =
-  'Minimisation, masking and verification are measured separately (utility retention %, residual leaks after masking), not by detection recall.';
+  'Recall and FNR score sensitive-vs-safe detection; per-category labels from step 3 are not yet reliable (category precision 38–52%). ' +
+  'False positives rise as layers are added: a flag means minimise and mask, not block. Minimisation, masking and verification are measured separately ' +
+  '(utility retention %, residual leaks after masking), not by detection recall.';
