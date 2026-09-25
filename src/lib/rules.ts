@@ -330,6 +330,40 @@ function decodeBase64(s: string): string | null {
   }
 }
 
+/** One-letter English words that can sit next to a spaced-out secret ("a", "I") and look like part of it. */
+const ONE_LETTER_WORD = /^[aAI]$/;
+
+const isHoneytoken = (s: string) => HONEYTOKEN_REGISTRY.some((r) => r.hash === fnv1a(s));
+const matchesWhole = (s: string) => scanRules(s).some((m) => m.start === 0 && m.end === s.length);
+
+/**
+ * Join a spaced-out run ("s k _ l i v e …"). A neighbouring one-letter word ("a", "I") has the same
+ * shape as the run's characters, so "a s k _ …" could be "ask_…" or "a sk_…". Resolution order:
+ *   1. a reading that is a registered honeytoken
+ *   2. a reading with the one-letter word split off that matches a rule exactly ("a sk_live_…")
+ *   3. the fully joined reading if it matches a rule exactly (real keys can start with "A": "AKIA…")
+ *   4. still ambiguous: keep both readings, so exact checks downstream (honeytoken hashes) see each
+ */
+function collapseSpacedRun(run: string): string {
+  const chars = run.split(' ');
+  const joined = chars.join('');
+  const lead = chars.length > 8 && ONE_LETTER_WORD.test(chars[0]);
+  const trail = chars.length > 8 && ONE_LETTER_WORD.test(chars[chars.length - 1]);
+  if (!lead && !trail) return joined;
+
+  const pre = lead ? `${chars[0]} ` : '';
+  const post = trail ? ` ${chars[chars.length - 1]}` : '';
+  const split: { core: string; text: string }[] = [];
+  if (lead && trail) split.push({ core: joined.slice(1, -1), text: `${pre}${joined.slice(1, -1)}${post}` });
+  if (lead) split.push({ core: joined.slice(1), text: `${pre}${joined.slice(1)}` });
+  if (trail) split.push({ core: joined.slice(0, -1), text: `${joined.slice(0, -1)}${post}` });
+
+  const all = [{ core: joined, text: joined }, ...split];
+  const decided =
+    all.find((c) => isHoneytoken(c.core)) ?? split.find((c) => matchesWhole(c.core)) ?? (matchesWhole(joined) ? all[0] : undefined);
+  return decided ? decided.text : `${joined} ${split[0].text}`;
+}
+
 /** Defeats simple evasion: zero-width chars, homoglyphs, spaced-out characters, base64. */
 export function normalise(input: string): { text: string; notes: NormaliseNote[] } {
   const notes: NormaliseNote[] = [];
@@ -351,7 +385,7 @@ export function normalise(input: string): { text: string; notes: NormaliseNote[]
   });
 
   text = text.replace(/(?<!\S)(?:[A-Za-z0-9_+/-] ){7,}[A-Za-z0-9_+/=-](?!\S)/g, (run) => {
-    const after = run.replace(/ /g, '');
+    const after = collapseSpacedRun(run);
     notes.push({ before: run, after, method: 'Collapse spaced-out characters' });
     return after;
   });

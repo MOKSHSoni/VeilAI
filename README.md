@@ -71,7 +71,7 @@ Other simulated data: `src/data/dashboard.ts`, `feedback.ts`, `documentScan.ts` 
 - Per-category Qwen prompts on their own: **4B 83.7% recall / 6.7% FPR (4.5 s per call)**; **1.7B 98.6% recall / 26.7% FPR (2.1 s per call)**. 4B is the precise option, 1.7B the fast and aggressive one.
 - Recall scores sensitive vs safe. Per-category labels from step 3 are not yet reliable (category precision 38–52%).
 - Step 6 halves hard false alarms (24.4% → 11.1%) at the same recall; the step 6 rule was chosen after seeing where false positives came from, so validate it on fresh data.
-- Separate layer tests: **honeytokens** 117/120 planted tokens caught (97.5%), 0 false alarms on 196 documents (misses: 3 spaced-out tokens followed by a one-letter word; partial copies by design). **Org DNA** exact excerpts 10/10, light/medium edits 10/10, heavy edits 3/10, paraphrases 0/10, 0 false alarms.
+- Separate layer tests: **honeytokens** 140/140 planted tokens caught (100%) across 7 forms including evasion, 0 false alarms on 196 documents; partial copies are missed by design (exact hash). **Org DNA** exact excerpts 10/10, light/medium edits 10/10, heavy edits 3/10, paraphrases 0/10, 0 false alarms.
 - Not measured: the L4 embedding classifier (needs separate training data).
 - Scripts, raw outputs and how to rerun: `../model testing/privacy-benchmark/ablation/README.md`.
 
@@ -193,6 +193,5 @@ The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), 
 - Honeytoken hashing uses FNV-1a for the demo. The design calls for HMAC with an organisation secret.
 - Dashboard numbers, the feedback regression gate and the document pages are illustrative.
 - The ablation is measured on one synthetic 192-document set from a single generator. With full fusion, 11.1% of safe documents are still hard-flagged and 13.3% go to REVIEW. A flag means minimise and mask, not block.
-- The normaliser can merge a following one-letter word into a spaced-out token (found by the honeytoken test).
 - No browser extension, persistence or authentication. Everything resets on reload.
 - No AI-based privacy system can guarantee 100% detection; VeilAI's design relies on multiple layers, verification before release and REVIEW for uncertainty.

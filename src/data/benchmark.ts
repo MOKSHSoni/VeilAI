@@ -108,11 +108,11 @@ export interface LayerTest {
 export const LAYER_TESTS: LayerTest[] = [
   {
     layer: 'L0 Honeytokens',
-    setup: '20 test tokens planted into benchmark documents in 6 forms; registry checked against all 196 unmodified documents',
+    setup: '20 test tokens planted between words of benchmark documents in 7 forms; registry checked against all 196 unmodified documents',
     results: [
-      { label: 'Planted tokens caught', value: '117 / 120 (97.5%)', good: true },
+      { label: 'Planted tokens caught', value: '140 / 140 (100%)', good: true },
       { label: 'False alarms', value: '0 / 196 documents', good: true },
-      { label: 'Spaced-out evasion', value: '17 / 20 (misses when the next word is one letter)', good: false },
+      { label: 'Evasion: spaced-out, beside "a", zero-width', value: '60 / 60', good: true },
       { label: 'Partial copy of a token', value: '0 / 20 (exact hash, by design)', good: false },
     ],
   },

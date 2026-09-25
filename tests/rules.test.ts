@@ -126,6 +126,42 @@ describe('normalise', () => {
     const { text } = normalise('AKIA\u200BQ7X3VEILDEMO4K2P раss');
     expect(text).toBe('AKIAQ7X3VEILDEMO4K2P pass');
   });
+  describe('spaced-out run next to a one-letter word ("a", "I")', () => {
+    const KEY = 'sk_live_4eC39HqLyjWDarjtT1zdp7dc';
+    const spaced = (s: string) => s.split('').join(' ');
+    const apiValues = (t: string) => valuesOf(normalise(t).text, 'API_KEY');
+
+    it('"a" before the key no longer hides it', () => {
+      expect(apiValues(`Here is a ${spaced(KEY)} for staging.`)).toEqual([KEY]);
+      expect(normalise(`Here is a ${spaced(KEY)} for staging.`).text).toBe(`Here is a ${KEY} for staging.`);
+    });
+
+    it('"a" or "I" after the key is not glued onto it', () => {
+      expect(apiValues(`The key ${spaced(KEY)} a new one was issued.`)).toEqual([KEY]);
+      expect(apiValues(`Key ${spaced(KEY)} I think it leaked.`)).toEqual([KEY]);
+      expect(apiValues(`So a ${spaced(KEY)} I guess.`)).toEqual([KEY]);
+    });
+
+    it('keys that really start with "A" still work (AKIA…)', () => {
+      expect(valuesOf(normalise(`key ${spaced('AKIAQ7X3VEILDEMO4K2P')} rotated`).text, 'AWS_ACCESS_KEY')).toEqual(['AKIAQ7X3VEILDEMO4K2P']);
+    });
+
+    it('a registered honeytoken is matched exactly even with a one-letter word beside it', () => {
+      const m = scanRules(normalise(`token ${spaced('HT-0042-7QX9VL3MZK81')} a copy`).text);
+      expect(m.map((x) => x.honeytokenId)).toEqual(['HT-0042']);
+    });
+
+    it('keeps both readings when no rule can decide, so exact hash checks see each', () => {
+      const t = normalise(`id ${spaced('QZ-9981-XKCDPLMN')} a spare`).text;
+      expect(t).toContain('QZ-9981-XKCDPLMNa');
+      expect(t).toContain('QZ-9981-XKCDPLMN a');
+    });
+
+    it('does not change runs without a one-letter neighbour', () => {
+      expect(normalise(`KEY = ${spaced(KEY)} was rotated`).text).toBe(`KEY = ${KEY} was rotated`);
+    });
+  });
+
   it('leaves ordinary prose alone', () => {
     const prose = 'The board has approved negotiations with Acme Corp in Q4.';
     expect(normalise(prose)).toEqual({ text: prose, notes: [] });
