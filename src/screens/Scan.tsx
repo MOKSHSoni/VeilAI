@@ -64,13 +64,13 @@ export function Scan() {
   const onFinished = useCallback(() => demo.next(demoIndex), [demoIndex]);
 
   return (
-    <div className="flex h-full min-h-[600px] flex-col gap-3 p-4">
-      <header className="flex items-center justify-between gap-4">
+    <div className="flex flex-col gap-3 p-3 lg:h-full lg:min-h-[600px] lg:p-4">
+      <header className="flex flex-wrap items-center justify-between gap-2 lg:gap-4">
         <div className="flex min-w-0 items-baseline gap-3">
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Scan</h1>
-          <span className="truncate text-[12.5px] text-ink-3">Understand → detect → minimise → mask → verify → send safely</span>
+          <span className="hidden truncate text-[12.5px] text-ink-3 md:block">Understand → detect → minimise → mask → verify → send safely</span>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div role="tablist" aria-label="Scan mode" className="flex rounded-lg border border-line bg-panel p-0.5">
             {(
               [
@@ -129,7 +129,7 @@ export function Scan() {
 
 function ScenarioPicker({ selected, onSelect }: { selected: number; onSelect: (id: number) => void }) {
   return (
-    <nav aria-label="Scenarios" className="grid grid-cols-10 gap-1.5">
+    <nav aria-label="Scenarios" className="-mx-3 flex gap-1.5 overflow-x-auto px-3 pb-1 lg:mx-0 lg:grid lg:grid-cols-10 lg:overflow-visible lg:px-0 lg:pb-0">
       {SCENARIOS.map((s) => {
         const on = s.id === selected;
         return (
@@ -138,7 +138,7 @@ function ScenarioPicker({ selected, onSelect }: { selected: number; onSelect: (i
             type="button"
             onClick={() => onSelect(s.id)}
             aria-current={on ? 'true' : undefined}
-            className={`group min-w-0 rounded-lg border px-2 py-1.5 text-left transition ${on ? 'border-ink bg-ink text-bg' : 'border-line bg-panel hover:border-line-2 hover:bg-panel-2'}`}
+            className={`group w-[118px] min-w-0 shrink-0 rounded-lg border px-2 py-1.5 text-left transition lg:w-auto ${on ? 'border-ink bg-ink text-bg' : 'border-line bg-panel hover:border-line-2 hover:bg-panel-2'}`}
           >
             <div className={`font-mono text-[10px] font-semibold ${on ? 'text-accent' : 'text-ink-3'}`}>{String(s.id).padStart(2, '0')}</div>
             <div className="truncate text-[11.5px] font-medium leading-tight">{s.title}</div>
@@ -301,16 +301,16 @@ function Workspace({
   const riskKnown = active >= 5 || phase === 'done';
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-[minmax(250px,290px)_232px_minmax(0,1fr)] gap-3">
-      <Panel className="flex min-h-0 flex-col overflow-hidden">
+    <div className="flex flex-col gap-3 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(250px,290px)_232px_minmax(0,1fr)]">
+      <Panel className="flex h-[440px] min-h-0 flex-col overflow-hidden lg:h-auto">
         <Composer run={run} phase={phase} sessionSent={sessionSent} decision={decision} onSend={onSend} autoType={autoPlay} paused={paused} />
       </Panel>
 
-      <Panel className="min-h-0 overflow-hidden">
+      <Panel className="order-3 h-[440px] min-h-0 overflow-hidden lg:order-none lg:h-auto">
         <PipelineStepper timings={run.timings} states={states} selected={shown} onSelect={setView} totalMs={s.simulatedTotalMs} finished={phase === 'done' || phase === 'decide'} />
       </Panel>
 
-      <Panel className="flex min-h-0 flex-col overflow-hidden">
+      <Panel className="order-2 flex min-h-[520px] flex-col overflow-hidden lg:order-none lg:min-h-0">
         <StageHeader run={run} index={shown} riskKnown={riskKnown} phase={phase} decision={decision} onReplay={onReplay} />
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           {shown < 0 ? (
@@ -386,7 +386,7 @@ function StageHeader({
           )}
           {t && sim && <SimTag />}
         </div>
-        <h2 className="truncate text-[15px] font-semibold tracking-tight">{t ? t.label : s.title}</h2>
+        <h2 className="text-[15px] font-semibold tracking-tight lg:truncate">{t ? t.label : s.title}</h2>
       </div>
       <div className="flex shrink-0 items-center gap-3">
         {riskKnown && (

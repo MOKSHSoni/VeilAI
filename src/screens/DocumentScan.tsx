@@ -108,7 +108,7 @@ export function DocumentScan() {
 
   return (
     <div
-      className="relative flex flex-col gap-3 p-4"
+      className="relative flex flex-col gap-3 p-3 sm:p-4"
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -126,7 +126,7 @@ export function DocumentScan() {
         </div>
       )}
 
-      <header className="flex items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Document Scan</h1>
           <p className="text-[12.5px] text-ink-3">Chunked page by page, so a sensitive sentence deep inside a long document is never lost.</p>
@@ -208,7 +208,7 @@ export function DocumentScan() {
         </div>
       )}
 
-      <div className="grid grid-cols-[minmax(0,1.35fr)_minmax(300px,1fr)] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,1fr)]">
         <Panel>
           <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
             <div className="flex min-w-0 items-center gap-3">

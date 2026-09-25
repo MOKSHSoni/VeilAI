@@ -16,8 +16,8 @@ export function Dashboard() {
   const events = alert ? [{ ...HONEYTOKEN_EVENT, time: alert.at }, ...RECENT_EVENTS] : RECENT_EVENTS;
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header className="flex items-end justify-between gap-4">
+    <div className="flex flex-col gap-3 p-3 sm:p-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Admin Dashboard</h1>
           <p className="text-[12.5px] text-ink-3">Organisation-wide visibility without surveillance.</p>
@@ -28,12 +28,12 @@ export function Dashboard() {
       </header>
 
       {alert && (
-        <div role="alert" className="rise flex items-center gap-4 overflow-hidden rounded-xl border-2 border-critical bg-panel">
-          <div className="flex items-center gap-2 self-stretch bg-critical px-4 text-white">
+        <div role="alert" className="rise flex flex-col overflow-hidden rounded-xl border-2 border-critical bg-panel sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex items-center gap-2 self-stretch bg-critical px-4 py-2 text-white sm:py-0">
             <Icon name="alert" size={18} />
             <span className="font-mono text-[11px] font-semibold tracking-wider">HONEYTOKEN ALERT</span>
           </div>
-          <div className="min-w-0 flex-1 py-2.5">
+          <div className="min-w-0 flex-1 px-4 py-2.5 sm:px-0">
             <div className="text-[14px] font-semibold">
               Honeytoken {alert.tokenId} detected · Planted in {alert.source} · Request blocked
             </div>
@@ -45,7 +45,7 @@ export function Dashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <KpiCard label="Scans today" value={(KPIS.scansToday + scansRun).toLocaleString('en-IN')} sub={`+${scansRun} this session`} icon="scan" />
         <KpiCard label="Blocked" value={KPIS.blocked + (alert ? 1 : 0)} sub="incl. honeytokens" icon="x" tone="var(--critical)" />
         <KpiCard label="Minimised & sent" value={KPIS.minimisedAndSent} sub="not blocked" icon="send" tone="var(--accent)" />
@@ -54,7 +54,7 @@ export function Dashboard() {
         <KpiCard label="Honeytoken alerts" value={KPIS.honeytokenAlerts + (alert ? 1 : 0)} sub={alert ? alert.tokenId : 'none today'} icon="alert" tone={alert ? 'var(--critical)' : undefined} highlight={!!alert} />
       </div>
 
-      <div className="grid grid-cols-[1.25fr_1fr_1.35fr] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1.25fr_1fr_1.35fr]">
         <Panel>
           <PanelHeader kicker="Events by category" title="What is being protected" right={<SimTag />} />
           <div className="h-[210px] px-2 py-2">
@@ -112,7 +112,7 @@ export function Dashboard() {
       <Panel>
         <PanelHeader kicker="Recent events" title="Metadata only: no prompt text, hashed user IDs" right={<SimTag />} />
         <div className="overflow-x-auto">
-          <table className="w-full text-[12px]">
+          <table className="w-full min-w-[720px] text-[12px]">
             <thead className="text-left">
               <tr className="border-b border-line bg-panel-2">
                 {['Time', 'Department', 'AI tool', 'Category', 'Risk', 'Action', 'User (hashed)'].map((h) => (

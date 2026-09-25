@@ -33,7 +33,7 @@ export function CaptureStage({ run }: { run: PipelineRun }) {
   const s = run.scenario;
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-[1fr_auto] gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
         <Field label="Instruction" hint="what the user asks the AI to do">
           <div className="text-[13.5px] font-medium">{s.instruction}</div>
         </Field>
@@ -95,9 +95,9 @@ export function NormaliseStage({ run }: { run: PipelineRun }) {
                 <div className="border-b border-line px-3 py-1.5">
                   <Kicker>{n.method}</Kicker>
                 </div>
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2">
+                <div className="grid grid-cols-1 items-center gap-2 px-3 py-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
                   <code className="break-all font-mono text-[11.5px] text-ink-3">{n.before}</code>
-                  <Icon name="arrow" size={14} className="text-ink-3" />
+                  <Icon name="arrow" size={14} className="rotate-90 text-ink-3 sm:rotate-0" />
                   <code className="break-all font-mono text-[11.5px] font-semibold" style={{ color: 'var(--critical)' }}>
                     {n.after}
                   </code>
@@ -127,8 +127,8 @@ export function TaskStage({ run }: { run: PipelineRun }) {
       </div>
       <p className="text-[12.5px] text-ink-2">The task decides what data is actually needed. The Data Minimisation Engine reads this row of the necessity matrix later on.</p>
       {row ? (
-        <div className="overflow-hidden rounded-lg border border-line bg-panel">
-          <table className="w-full text-[11.5px]">
+        <div className="overflow-x-auto rounded-lg border border-line bg-panel">
+          <table className="w-full min-w-[560px] text-[11.5px]">
             <thead>
               <tr className="bg-panel-2">
                 <th className="px-2.5 py-1.5 text-left font-normal">
@@ -170,7 +170,7 @@ export function DetectStage({ run, animate }: { run: PipelineRun; animate: boole
   return (
     <div className="space-y-3">
       <DetectionFork layers={run.scenario.layerResults} />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {run.scenario.layerResults.map((l, i) => (
           <LayerCard key={l.layer} result={l} delay={animate ? i * 180 : 0} />
         ))}
@@ -189,7 +189,7 @@ export function FusionStage({ run }: { run: PipelineRun }) {
   const anyFlag = s.layerResults.some((l) => l.status === 'FLAGGED');
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-[1.1fr_1fr] gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.1fr_1fr]">
         <div className="rounded-lg border border-line bg-panel p-3">
           <div className="flex items-center justify-between">
             <Kicker>Fused confidence (noisy-OR)</Kicker>
@@ -234,8 +234,8 @@ function FindingsTable({ run }: { run: PipelineRun }) {
   const f = run.scenario.findings;
   const shown = f.slice(0, 6);
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-panel">
-      <table className="w-full table-fixed text-[11.5px]">
+    <div className="overflow-x-auto rounded-lg border border-line bg-panel">
+      <table className="w-full min-w-[460px] table-fixed text-[11.5px]">
         <colgroup>
           <col className="w-[38%]" />
           <col className="w-[27%]" />
@@ -289,7 +289,7 @@ export function PolicyStage({ run }: { run: PipelineRun }) {
   const relevant = new Set(s.findings.flatMap((f) => f.labels));
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Readout label="Risk level" note="policy outcome">
           <RiskBadge level={s.riskLevel} size="lg" />
         </Readout>
@@ -375,12 +375,12 @@ export function MaskStage({ run, animate }: { run: PipelineRun; animate: boolean
         <Callout icon="layers">
           Structured data: minimisation removed {run.table.original.columns.length - run.table.kept.columns.length} columns. Only the kept column ({run.table.kept.columns.join(', ')}) is transformed and sent.
         </Callout>
-        <div className="grid grid-cols-[1fr_auto_160px] items-start gap-3">
+        <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[1fr_auto_160px]">
           <div className="rounded-lg border border-line bg-panel p-2">
             <Kicker className="mb-1">Original · stays local</Kicker>
             <pre className="max-h-[210px] overflow-auto font-mono text-[10.5px] leading-relaxed text-ink-3 blur-[1.5px] hover:blur-0">{tableToCsv(run.table.original)}</pre>
           </div>
-          <Icon name="arrow" size={16} className="mt-16 text-ink-3" />
+          <Icon name="arrow" size={16} className="mt-16 hidden text-ink-3 sm:block" />
           <div className="rounded-lg border border-accent/40 bg-accent-soft p-2">
             <Kicker className="mb-1 !text-accent">Outbound</Kicker>
             <pre className="font-mono text-[11.5px] font-semibold leading-relaxed">{first.text}</pre>
@@ -419,7 +419,7 @@ export function VerifyStage({ run, animate }: { run: PipelineRun; animate: boole
         qwenReview={run.scenario.escalateToQwenReview ? { note: run.scenario.qwenReviewNote ?? 'Inconclusive.', ms: QWEN_REVIEW_MS } : null}
       />
       {v.status === 'REPAIRED' && !run.table && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div>
             <Kicker className="mb-1">Attempt 1 output (leak underlined)</Kicker>
             <DiffView content={run.scenario.content} result={v.attempts[0].mask} animate={false} leakTerms={leakTerms} bare />

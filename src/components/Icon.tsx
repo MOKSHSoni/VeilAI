@@ -28,6 +28,7 @@ const PATHS = {
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
   layers: 'M12 3 2 8l10 5 10-5zM2 13l10 5 10-5M2 18l10 5 10-5',
   bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  menu: 'M4 6h16M4 12h16M4 18h16',
 } as const;
 
 export type IconName = keyof typeof PATHS;

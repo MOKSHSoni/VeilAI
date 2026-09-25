@@ -33,7 +33,7 @@ export function DemoHud() {
           <span className={`h-1.5 w-1.5 rounded-full bg-[#8fa0ff] ${d.paused ? '' : 'animate-pulse'}`} />
           DEMO {d.index + 1}/{DEMO_STEPS.length}
         </span>
-        <span className="max-w-[240px] truncate">{step.label}</span>
+        <span className="hidden max-w-[240px] truncate sm:inline">{step.label}</span>
         <div className="flex items-center gap-0.5">
           <HudBtn label="Previous step" onClick={demo.prev}>
             <Icon name="arrow" size={13} className="rotate-180" />

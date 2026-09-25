@@ -24,7 +24,7 @@ export function ExplainerCard({ scenario }: { scenario: Scenario }) {
           template-filled, not free LLM text <SimTag />
         </span>
       </div>
-      <dl className="grid grid-cols-[128px_1fr] text-[12.5px]">
+      <dl className="grid grid-cols-[92px_1fr] text-[12.5px] sm:grid-cols-[128px_1fr]">
         {ROWS.map((r) => (
           <div key={r.key} className="contents">
             <dt className="border-t border-line/70 px-3 py-1.5 text-ink-3 first:border-t-0">{r.label}</dt>

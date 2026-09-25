@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Icon, type IconName } from './Icon';
 import { DemoHud } from './DemoHud';
@@ -37,6 +37,19 @@ function useTheme() {
 
 export function Layout() {
   const [dark, setDark] = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { pathname } = useLocation();
+  const current = NAV.find((n) => n.to === pathname) ?? NAV[0];
+
+  // Close the mobile drawer on navigation and on Escape.
+  useEffect(() => setMenuOpen(false), [pathname]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
   return (
     <div className="flex h-full min-h-0">
       <a
@@ -45,7 +58,57 @@ export function Layout() {
       >
         Skip to content
       </a>
-      <aside className="flex w-[212px] shrink-0 flex-col border-r border-line bg-panel">
+      <aside className="hidden w-[212px] shrink-0 flex-col border-r border-line bg-panel lg:flex">
+        <SidebarContent dark={dark} setDark={setDark} />
+      </aside>
+
+      {/* Mobile navigation drawer */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
+          <aside className="rise absolute inset-y-0 left-0 flex w-[260px] max-w-[85vw] flex-col border-r border-line bg-panel shadow-2xl">
+            <SidebarContent dark={dark} setDark={setDark} />
+          </aside>
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-panel px-3 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-line text-ink-2"
+          >
+            <Icon name="menu" size={18} />
+          </button>
+          <BrandMark size={24} />
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="font-display text-[14px] font-semibold">VeilAI</div>
+            <div className="truncate text-[10.5px] text-ink-3">{current.label}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDark((d) => !d)}
+            aria-label={`Switch to ${dark ? 'light' : 'dark'} theme`}
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-line text-ink-2"
+          >
+            <Icon name={dark ? 'moon' : 'sun'} size={16} />
+          </button>
+        </div>
+        <AttestationStrip />
+        <main id="main" className="surface-grid min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function SidebarContent({ dark, setDark }: { dark: boolean; setDark: (f: (d: boolean) => boolean) => void }) {
+  return (
+    <>
         <div className="flex items-center gap-2.5 px-4 pb-4 pt-4">
           <BrandMark />
           <div className="leading-tight">
@@ -103,14 +166,7 @@ export function Layout() {
             <span className="font-mono text-[10px] text-ink-3">toggle</span>
           </button>
         </div>
-      </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <AttestationStrip />
-        <main id="main" className="surface-grid min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -125,14 +181,14 @@ export function AttestationStrip() {
     <div
       role="status"
       aria-label="Local privacy attestation"
-      className="flex h-9 shrink-0 items-center gap-5 overflow-hidden border-b border-line bg-panel px-5 text-[12px]"
+      className="flex h-9 shrink-0 items-center gap-3 overflow-hidden border-b border-line bg-panel px-3 text-[11.5px] lg:gap-5 lg:px-5 lg:text-[12px]"
     >
-      <span className="flex shrink-0 items-center gap-1.5 font-medium text-ink">
+      <span className="hidden shrink-0 items-center gap-1.5 font-medium text-ink sm:flex">
         <Icon name="shield" size={14} className="text-accent" /> Attestation
       </span>
-      <span className="h-3.5 w-px shrink-0 bg-line-2" />
+      <span className="hidden h-3.5 w-px shrink-0 bg-line-2 sm:block" />
       {items.filter((i) => !demoActive || i.k !== 'Model').map((i) => (
-        <span key={i.k} className="flex shrink-0 items-center gap-1.5 text-ink-2">
+        <span key={i.k} className={`shrink-0 items-center gap-1.5 text-ink-2 ${i.k === 'Model' || demoActive ? 'hidden md:flex' : 'flex'}`}>
           <Icon name={i.icon} size={13} className="text-ink-3" />
           <span className="text-ink-3">{i.k}:</span>
           <span className="font-mono text-[11.5px] text-ink">{i.v}</span>

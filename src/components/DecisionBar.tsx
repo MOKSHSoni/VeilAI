@@ -35,7 +35,7 @@ export function DecisionBar({
     return 'Not allowed by policy for this request';
   };
   return (
-    <div role="group" aria-label="Decision" className="grid grid-cols-5 gap-1.5">
+    <div role="group" aria-label="Decision" className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-5">
       {ORDER.map((d) => {
         const meta = DECISION_META[d];
         const on = enabled.includes(d);

@@ -26,7 +26,7 @@ export function PanelHeader({ kicker, title, right }: { kicker?: ReactNode; titl
     <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
       <div className="min-w-0">
         {kicker && <Kicker className="mb-0.5">{kicker}</Kicker>}
-        <h2 className="truncate text-[14px] font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-[14px] font-semibold tracking-tight lg:truncate">{title}</h2>
       </div>
       {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}
     </div>

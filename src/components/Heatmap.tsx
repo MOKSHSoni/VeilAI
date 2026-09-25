@@ -7,7 +7,7 @@ const NO_MATCH = 'var(--ink-3)';
 export function Heatmap({ pages, revealed, selected, onSelect }: { pages: PageView[]; revealed: number; selected: number | null; onSelect: (page: number) => void }) {
   const dense = pages.length > 10;
   return (
-    <div role="listbox" aria-label="Page risk heatmap" className={`grid gap-3 ${dense ? 'grid-cols-8 gap-2' : 'grid-cols-5'}`}>
+    <div role="listbox" aria-label="Page risk heatmap" className={`grid gap-3 ${dense ? 'grid-cols-4 gap-2 sm:grid-cols-8' : 'grid-cols-3 sm:grid-cols-5'}`}>
       {pages.map((p, i) => {
         const shown = i < revealed;
         const scanning = i === revealed;

@@ -22,7 +22,7 @@ export function TryOwnText() {
   }, [text]);
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-3">
+    <div className="grid gap-3 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
       <Panel className="flex min-h-0 flex-col">
         <PanelHeader
           kicker="Try your own text"
@@ -38,7 +38,7 @@ export function TryOwnText() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             spellCheck={false}
-            className="min-h-0 flex-1 resize-none rounded-lg border border-line-2 bg-panel p-3 font-mono text-[12px] leading-relaxed outline-none focus:border-accent"
+            className="min-h-[220px] flex-1 resize-none rounded-lg lg:min-h-0 border border-line-2 bg-panel p-3 font-mono text-[12px] leading-relaxed outline-none focus:border-accent"
           />
           <p className="mt-2 text-[11.5px] leading-snug text-ink-3">
             Runs the real <span className="font-mono">rules.ts</span> (L0 honeytokens + L1 regex, Luhn and Verhoeff) plus the normaliser, <span className="font-mono">masking.ts</span> and{' '}

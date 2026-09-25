@@ -47,8 +47,8 @@ export function Feedback() {
   }, [demoHere, d.paused, stages, demoIndex]);
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header className="flex items-end justify-between gap-4">
+    <div className="flex flex-col gap-3 p-3 sm:p-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Analyst Feedback</h1>
           <p className="text-[12.5px] text-ink-3">Adaptive Detection: learn the company's terms, with safety gates so learning can never weaken protection.</p>
@@ -58,7 +58,7 @@ export function Feedback() {
         </div>
       </header>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <Panel>
           <PanelHeader kicker="Queue" title={`${FEEDBACK_QUEUE.length} findings to review`} right={<span className="font-mono text-[10.5px] text-ink-3">redacted evidence only</span>} />
           <ul className="divide-y divide-line">
@@ -85,7 +85,7 @@ export function Feedback() {
                         <RiskBadge level={f.severity} size="sm" />
                       </div>
                     </div>
-                    <div className="font-mono text-[11.5px] text-ink-2">{f.snippet}</div>
+                    <div className="break-words font-mono text-[11.5px] text-ink-2">{f.snippet}</div>
                     <div className="text-[11.5px] text-ink-3">
                       {f.reason} · <span className="font-mono">{f.reportedBy}</span> · {f.department}
                     </div>
@@ -144,11 +144,11 @@ function Detail({ item, stage }: { item: FeedbackItem; stage: FeedbackStage }) {
       <div className="space-y-3 p-4">
         <div className="rounded-lg border border-line bg-panel-2 px-3 py-2.5">
           <Kicker className="mb-1">Redacted evidence</Kicker>
-          <div className="font-mono text-[12.5px]">{item.snippet}</div>
+          <div className="break-words font-mono text-[12.5px]">{item.snippet}</div>
           <div className="mt-1.5 text-[11.5px] text-ink-3">{item.reason}</div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <Btn
             disabled={!item.suppressible || stage !== 'OPEN'}
             onClick={() => store.setFeedback(item.id, item.term ? 'PROPOSED' : 'FP_LOGGED')}

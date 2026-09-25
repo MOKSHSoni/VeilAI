@@ -42,8 +42,8 @@ function MeasuredBadge() {
 export function Benchmark() {
   const chartData = BY_CATEGORY.map((r) => ({ ...r, label: SHORT[r.category] }));
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header className="flex items-end justify-between gap-4">
+    <div className="flex flex-col gap-3 p-3 sm:p-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[20px] font-semibold tracking-tight">Benchmark</h1>
           <p className="text-[12.5px] text-ink-3">LLM-only detection, measured. We found exactly where it fails and built a detector for each failure.</p>
@@ -62,10 +62,10 @@ export function Benchmark() {
         <span className="font-mono text-[11.5px] text-ink-2">{BENCHMARK_SETUP.hardware}</span>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <Panel>
           <PanelHeader kicker="Overall · LLM only" title="Qwen3 1.7B vs Qwen3 4B" />
-          <table className="w-full text-[12.5px]">
+          <div className="overflow-x-auto"><table className="w-full min-w-[480px] text-[12.5px]">
             <thead>
               <tr className="border-b border-line bg-panel-2 text-left">
                 <th className="px-4 py-2 font-normal">
@@ -93,7 +93,7 @@ export function Benchmark() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
           <div className="border-t border-line bg-panel-2 px-4 py-2.5 text-[12px] text-ink-2">
             High precision, low recall: the model is cautious, not confused. An LLM alone misses more than half of sensitive documents.
           </div>
@@ -135,10 +135,10 @@ export function Benchmark() {
         </Panel>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <Panel>
           <PanelHeader kicker="By category" title="Recall per category, LLM only" />
-          <table className="w-full text-[12.5px]">
+          <div className="overflow-x-auto"><table className="w-full min-w-[480px] text-[12.5px]">
             <thead>
               <tr className="border-b border-line bg-panel-2 text-left">
                 <th className="px-4 py-2 font-normal">
@@ -167,12 +167,12 @@ export function Benchmark() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </Panel>
 
         <Panel>
           <PanelHeader kicker="Long-document test" title="One hidden sensitive sentence" />
-          <div className="grid grid-cols-4 gap-2 p-4">
+          <div className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-4">
             {LONG_DOCUMENT.map((r) => (
               <div
                 key={r.pages}
@@ -195,7 +195,7 @@ export function Benchmark() {
 
       <Panel>
         <PanelHeader kicker="Ablation · detection layers only" title={ABLATION_HEADLINE} />
-        <table className="w-full text-[12.5px]">
+        <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-[12.5px]">
           <thead>
             <tr className="border-b border-line bg-panel-2 text-left">
               {['Step', 'Change', 'Recall', 'FNR', 'FPR', 'Review'].map((h, i) => (
@@ -219,11 +219,11 @@ export function Benchmark() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <p className="border-t border-line px-4 py-2.5 text-[11.5px] text-ink-3">{ABLATION_NOTE}</p>
       </Panel>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {LAYER_TESTS.map((t) => (
           <Panel key={t.layer}>
             <PanelHeader kicker="Layer test · outside the 192-document set" title={t.layer} />
