@@ -28,7 +28,7 @@ After `npm install`, nothing else is downloaded. The app uses system fonts only 
 | `npm run dev` | Dev server with hot reload (http://localhost:5173) |
 | `npm run build` | Type-checks, then builds to `dist/` |
 | `npm run preview` | Serves the built `dist/` (http://localhost:4173) |
-| `npm test` | Runs the Vitest suite (rules, masking, verification, rehydration, scenarios) |
+| `npm test` | Runs the Vitest suite (172 tests: rules, masking, verification, rehydration, scenarios, document scan + reports, demo files) |
 | `npm run typecheck` | `tsc --noEmit` in strict mode |
 | `npm run lint` | ESLint |
 
@@ -53,7 +53,23 @@ Other simulated data: `src/data/dashboard.ts`, `feedback.ts`, `documentScan.ts` 
 **`src/data/benchmark.ts`** holds the only real measured data in the app (192 documents, Intel Core Ultra 5 125H, 16 GB RAM, CPU only).
 
 - `OVERALL`, `BY_CATEGORY` and `LONG_DOCUMENT` hold the measured Qwen3 1.7B vs 4B results.
-- `ABLATION`: steps 0–4 are measured (Qwen3 4B; scripts and raw results in `../model testing/privacy-benchmark/ablation/`). Steps 5–6 are `null` and render as **"To be measured"**. When a step is measured, replace `null` with a string such as `'61.2%'`. Do not add ensemble numbers that have not been measured.
+- `ABLATION`: steps 0–4 are measured (Qwen3 4B), with recall, FNR and FPR. Steps 5–6 are `null` and render as **"To be measured"**. When a step is measured, replace `null` with a string such as `'61.2%'`. Do not add ensemble numbers that have not been measured.
+
+### Measured ablation (Qwen3 4B, same 192 documents, same scoring as the LLM-only benchmark)
+
+| Step | Change | Recall | FNR | FPR |
+|---|---|---:|---:|---:|
+| 0 | Qwen3 4B baseline (LLM only) | 45.6% | 54.4% | 6.7% |
+| 1 | + label hierarchy | 45.6% | 54.4% | 6.7% |
+| 2 | + L1 rules + L2 NER (Presidio + GLiNER) | 57.8% | 42.2% | 17.8% |
+| 3 | + chunked, per-category L5 prompts (financial, business, IP) | **95.2%** | **4.8%** | 22.2% |
+| 4 | + L4 cue rules (classifier not trained) | 95.2% | 4.8% | 24.4% |
+| 5–6 | Org DNA + honeytokens; full fusion | to be measured | | |
+
+- Per-category Qwen prompts on their own: **4B 83.7% recall / 6.7% FPR (4.5 s per call)**; **1.7B 98.6% recall / 26.7% FPR (2.1 s per call)**. 4B is the precise option, 1.7B the fast and aggressive one.
+- Recall scores sensitive vs safe. Per-category labels from step 3 are not yet reliable (category precision 38–52%).
+- Steps 5–6 need an organisation corpus and a planted-honeytoken test set; the L4 classifier needs separate training data.
+- Scripts, raw outputs and how to rerun: `../model testing/privacy-benchmark/ablation/README.md`.
 
 ## 5. Architecture overview
 
@@ -104,10 +120,15 @@ src/
 │   ├── rehydrate.ts     tolerant placeholder restoration; secrets never restored
 │   ├── pipeline.ts      runs one scenario through the real code and lays out step timings
 │   ├── store.ts         in-memory allowlist, honeytoken alert, feedback state
+│   ├── documents.ts     Document Scan: page splitting, real rules scan of added files, redaction
+│   ├── report.ts        HTML / JSON scan report export (redacted, self-contained)
 │   └── demo.ts          Demo mode sequencer
 ├── components/  RiskBadge, LayerCard, PipelineStepper, DiffView (the "veil"), VaultPanel, ExplainerCard,
 │                MinimisationView, VerificationChecks, DecisionBar, RehydrationView, Heatmap, KpiCard, …
 └── screens/     Scan, DocumentScan, Dashboard, Feedback, Benchmark
+tests/           Vitest: rules, masking, verification, rehydrate, scenarios, documents, demo-files
+demo-files/      10 fictional test files for Document Scan, with expected results (see its README)
+docs/            design doc + build spec
 ```
 
 ## 6. What is simulated vs what runs for real
@@ -118,9 +139,11 @@ src/
 | Explanations, task types, AI replies, local answers | `masking.ts`: builds the sanitised text from findings and minimisation |
 | Step latencies and totals | `verification.ts`: leak/variant/pattern checks and auto-repair |
 | Dashboard metrics, feedback queue, regression gate, document pages | `rehydrate.ts`: restores placeholders in the reply |
+| Sample board pack in Document Scan | `documents.ts` + `rules.ts`: files you add are scanned for real, with measured latency |
+| | `report.ts`: exported reports |
 | | `store.ts`: in-memory allowlist and alerts |
 
-Scan screen steps show a **RUNS FOR REAL · file.ts** tag or a **SIMULATED** tag. The **Benchmark screen is the only screen with real measured numbers.**
+Scan screen steps show a **RUNS FOR REAL · file.ts** tag or a **SIMULATED** tag. The **Benchmark screen is the only screen with real measured benchmark numbers.** Files you add in Document Scan are scanned for real and tagged **RULES ONLY · REAL**.
 
 Example of the real code at work: in Scenario 5 the finding lists only `"Rahul Mehta"`. `masking.ts` replaces that exact span, so `"Rahul's"` survives the first pass. `verification.ts` detects the first-name + possessive variant, adds `"Rahul"` to the vault under `⟦EMP_01⟧`, re-masks and passes. None of this is scripted.
 
@@ -144,9 +167,9 @@ To present it manually:
 6. **05 HR email.** Watch Verification: **fail → repair → pass**, then rehydration, including a mangled `⟦ emp_01 ⟧`.
 7. **Admin Dashboard.** The honeytoken alert card and metadata-only events.
 8. **Analyst Feedback → Project Atlas → False positive → gate PASS → Request approval → Approve.** Then **Re-run Scenario 10**, which is now SAFE.
-9. **Benchmark.** Real measured results; the ablation is still "To be measured".
+9. **Benchmark.** Real measured results: the LLM-only benchmark and the ablation (45.6% → 95.2% recall), with false-positive rates.
 
-**Document Scan** shows the simulated board pack, and **Add file** (or drag and drop) scans your own text files (`.txt`, `.md`, `.csv`, `.json`, `.log`, `.yaml`, code, up to 1 MB) with the real `rules.ts`, page by page, in the browser. **Export report** downloads an HTML or JSON report with redacted evidence. PDF and Word files are not supported in the prototype.
+**Document Scan** shows the simulated board pack, and **Add file** (or drag and drop) scans your own text files (`.txt`, `.md`, `.csv`, `.json`, `.log`, `.yaml`, code, up to 1 MB) with the real `rules.ts`, page by page, in the browser. **Export report** downloads an HTML or JSON report with redacted evidence. PDF and Word files are not supported in the prototype. Ready-made test files with known results are in [`demo-files/`](demo-files/README.md).
 
 The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), **08** evasion (spaced-out key + base64 password, decoded), **09** REVIEW (escalated Qwen review; send sanitised, edit with live re-verification, or override with justification). The **Try your own text** tab runs the real rules on anything you paste.
 
@@ -165,6 +188,6 @@ The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), 
 - Rules are a representative subset (AWS/Stripe/GitHub/Google/Slack-style keys, passwords, emails, Indian mobiles, Aadhaar, PAN, cards, internal hosts), not a full gitleaks ruleset.
 - Honeytoken hashing uses FNV-1a for the demo. The design calls for HMAC with an organisation secret.
 - Dashboard numbers, the feedback regression gate and the document pages are illustrative.
-- Ensemble performance is **not measured yet**. The ablation rows say so on purpose.
+- Ablation steps 0–4 are measured on one synthetic 192-document set from a single generator; steps 5–6 are not measured. False positives rise with more layers (6.7% → 24.4%). A flag means minimise and mask, not block.
 - No browser extension, persistence or authentication. Everything resets on reload.
 - No AI-based privacy system can guarantee 100% detection; VeilAI's design relies on multiple layers, verification before release and REVIEW for uncertainty.
