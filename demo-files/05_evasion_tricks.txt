@@ -1,0 +1,13 @@
+Deploy notes (someone tried to hide the secrets)
+
+1. Key with spaces between every character:
+PAYMENTS_KEY = s k _ l i v e _ 4 e C 3 9 H q L y j W D a r j t T 1 z d p 7 d c
+
+2. Password encoded in base64:
+db_pass_b64: VmVpbERlbW8hUGFzc3cwcmQ=
+
+3. AWS key with an invisible zero-width space inside:
+backup key AKIA​Q7X3VEILDEMO4K2P
+
+4. AWS key using look-alike Cyrillic letters at the start:
+legacy key АКIAQ7X3VEILDEMO4K2P

@@ -1,0 +1,7 @@
+# finance-reports/config/export.yaml
+service: quarterly-export
+region: ap-south-1
+storage:
+  bucket: fin-reports-archive
+  access_token: HT-0042-7QX9VL3MZK81
+schedule: "0 2 * * 1"
