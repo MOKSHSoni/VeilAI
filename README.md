@@ -146,6 +146,8 @@ To present it manually:
 8. **Analyst Feedback → Project Atlas → False positive → gate PASS → Request approval → Approve.** Then **Re-run Scenario 10**, which is now SAFE.
 9. **Benchmark.** Real measured results; the ablation is still "To be measured".
 
+**Document Scan** shows the simulated board pack, and **Add file** (or drag and drop) scans your own text files (`.txt`, `.md`, `.csv`, `.json`, `.log`, `.yaml`, code, up to 1 MB) with the real `rules.ts`, page by page, in the browser. **Export report** downloads an HTML or JSON report with redacted evidence. PDF and Word files are not supported in the prototype.
+
 The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), **08** evasion (spaced-out key + base64 password, decoded), **09** REVIEW (escalated Qwen review; send sanitised, edit with live re-verification, or override with justification). The **Try your own text** tab runs the real rules on anything you paste.
 
 ## 8. Offline guarantee
@@ -159,6 +161,7 @@ The other scenarios: **07** mosaic session (three LOW messages add up to HIGH), 
 ## 9. Prototype limitations
 
 - **No real inference.** L2–L5 outputs, risk scores, explanations and AI replies are hardcoded per scenario. Free text in "Try your own text" gets only the real L0/L1 rules.
+- Added files are scanned by L0/L1 rules only (no contextual layers); PDF/DOCX need a parser the prototype does not include.
 - Rules are a representative subset (AWS/Stripe/GitHub/Google/Slack-style keys, passwords, emails, Indian mobiles, Aadhaar, PAN, cards, internal hosts), not a full gitleaks ruleset.
 - Honeytoken hashing uses FNV-1a for the demo. The design calls for HMAC with an organisation secret.
 - Dashboard numbers, the feedback regression gate and the document pages are illustrative.
